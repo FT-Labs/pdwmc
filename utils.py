@@ -5,22 +5,32 @@ import sys
 sys.path.extend(['.', '..'])
 from pycparser import c_generator
 
-DWM_DATA_DIR = None
-
 def set_dwm_data_dir():
-    global DWM_DATA_DIR
     d = os.getenv("XDG_DATA_HOME")
 
     if d == None:
         d = os.getenv("HOME")
         if d == None:
-            return
+            exit(1)
         d = d + "/.local/share/phyos/dwm"
-        DWM_DATA_DIR = d
-        return
+        return d
 
     d = d + "/phyos/dwm"
-    DWM_DATA_DIR = d
+    return d
+
+def set_dwm_cache_dir():
+    d = os.getenv("XDG_CACHE_HOME")
+
+    if d == None:
+        d = os.getenv("HOME")
+        if d == None:
+            return os.curdir
+        d = d + "/.cache/phyos/ddwm"
+        return d
+
+    d = d + "/phyos/ddwm"
+    return d
+
 
 def read_file(header, path):
     with open(path, "r", encoding="utf-8") as f:
@@ -28,10 +38,4 @@ def read_file(header, path):
 
 def print_ast_to_c(ast):
     generator = c_generator.CGenerator()
-    return generator.visit(ast)
-
-def init():
-    set_dwm_data_dir()
-
-    if DWM_DATA_DIR == None:
-        exit(1)
+    return generator._generate_stmt(ast)
