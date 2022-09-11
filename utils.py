@@ -2,20 +2,38 @@
 
 import os
 import sys
+from shutil import rmtree
 sys.path.extend(['.', '..'])
 from pycparser import c_generator
 
+def get_key_from_value(d, val):
+    return [k for k, v in d.items() if v == val][0]
+
+def write_default_settings():
+    if not os.path.exists("/etc/xdg/pdwm"):
+        sys.stderr("Error: /etc/xdg/pdwm doesn't exist.")
+        exit(1)
+    p = set_dwm_data_dir()
+    if not os.path.exists(p):
+        os.makedirs(p)
+    os.system(f"cp -fr /etc/xdg/pdwm/* {p}")
+    os.system("tput setaf 51")
+    print(f"Default settings have been written to {p}")
+    p = set_dwm_cache_dir()
+    if os.path.exists(p):
+        rmtree(p)
+
 def set_dwm_data_dir():
-    d = os.getenv("XDG_DATA_HOME")
+    d = os.getenv("XDG_CONFIG_HOME")
 
     if d == None:
         d = os.getenv("HOME")
         if d == None:
             exit(1)
-        d = d + "/.local/share/phyos/dwm"
+        d = d + "/.config/phyos/pdwm"
         return d
 
-    d = d + "/phyos/dwm"
+    d = d + "/phyos/pdwm"
     return d
 
 def set_dwm_cache_dir():
@@ -25,10 +43,10 @@ def set_dwm_cache_dir():
         d = os.getenv("HOME")
         if d == None:
             return os.curdir
-        d = d + "/.cache/phyos/ddwm"
+        d = d + "/.cache/phyos/pdwm"
         return d
 
-    d = d + "/phyos/ddwm"
+    d = d + "/phyos/pdwm"
     return d
 
 

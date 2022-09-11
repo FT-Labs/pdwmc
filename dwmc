@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+from dwmparser import *
+import argparse
+
+if __name__ == "__main__":
+    dwm_parse = DwmParse()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-w", "--write", action="store_true", required=False, help="Write current dwm configuration to edit [Use this before to edit dwm configuration] or reset your changes")
+    parser.add_argument("-b", "--build", action="store_true", required=False, help="Save changes to dwm")
+    parser.add_argument("-g", "--get", action="store_true", required=False, help="Get default dwm settings (overrides current) to use dwmc, also runs -w flag")
+    parser.add_argument("-s", "--show", type=str, required=False,
+            choices=["appearance", "buttons", "keys", "rules"])
+    parser.add_argument("-c", "--change", type=str, required=False, help="Choose and change attribute",
+            choices=["appr", "font", "button", "key", "rule"])
+    parser.add_argument("-a", "--add", type=str, required=False, help="Add new attribute",
+            choices=["font", "button", "key", "rule"])
+    parser.add_argument("-d", "--delete", type=str, required=False, help="Delete an attribute",
+            choices=["font", "button", "key", "rule"])
+
+    args = parser.parse_args()
+
+    if args.get:
+        u.write_default_settings()
+        dwm_parse.get_files("/appearance", "/buttons", "/keys", "/rules")
+        dwm_parse.make_tables()
+        dwm_parse.write_tmp_files()
+        exit(0)
+
+    if args.show != None:
+        dwm_parse.get_files("/" + args.show)
+        dwm_parse.which_table("show", args.show)
+    elif args.change == "appr" or args.change == "font" or args.add == "font":
+        dwm_parse.get_files("/appearance")
+        dwm_parse.update_appearance()
+        dwm_parse.which_table("change" if args.change else "add", args.change if args.change else args.add)
+    elif args.change == "key" or args.add == "key":
+        dwm_parse.get_files("/keys")
+        dwm_parse.update_keys()
+        dwm_parse.which_table("change" if args.change else "add", args.change if args.change else args.add)
+    elif args.change == "button" or args.add == "button":
+        dwm_parse.get_files("/buttons")
+        dwm_parse.update_buttons()
+        dwm_parse.which_table("change" if args.change else "add", args.change if args.change else args.add)
+    elif args.change == "rule" or args.add == "rule":
+        dwm_parse.get_files("/rules")
+        dwm_parse.update_rules()
+        dwm_parse.which_table("change" if args.change else "add", args.change if args.change else args.add)
+    elif args.delete:
+        if args.delete == "button":
+            dwm_parse.get_files("/buttons")
+            dwm_parse.update_buttons()
+        elif args.delete == "key":
+            dwm_parse.get_files("/keys")
+            dwm_parse.update_keys()
+        elif args.delete == "rule":
+            dwm_parse.get_files("/rules")
+            dwm_parse.update_rules()
+        else:
+            dwm_parse.get_files("/appearance")
+            dwm_parse.update_appearance()
+        dwm_parse.which_table("delete", args.delete)
+    elif args.write:
+        dwm_parse.get_files("/appearance", "/buttons", "/keys", "/rules")
+        dwm_parse.make_tables()
+        dwm_parse.write_tmp_files()
+    elif args.build:
+        dwm_parse.build_dwm()
