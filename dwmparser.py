@@ -292,7 +292,7 @@ class DwmParse:
             term_menu = TerminalMenu(events, title="Select event window:")
             eventidx = term_menu.show()
             add_button.append(events[eventidx])
-            new_button = input("Please enter the new modifier (Win, Alt, ShiftMask), you can add combinations with '|'.\nGive empty input for no modifier.\n")
+            new_button = input("Please enter the new modifier (Win, Alt, Shift, Control), you can add combinations with '|'.\nGive empty input for no modifier.\n")
             new_button = "0" if new_button == "" else new_button
             add_button.append(new_button)
             new_button = input("Please enter the new mouse button.\n")
@@ -397,7 +397,11 @@ class DwmParse:
         if isappend:
             pass
         else:
-            pass
+            t1 = tabulate.tabulate(self.tabular_rules, tablefmt="fancy_grid").split("\n")
+            term_menu = TerminalMenu(t1, skip_empty_entries=True, cursor_index=1)
+            idx = term_menu.show()
+            idx //= 2
+
 
     def print_appearance(self):
         t1 = tabulate.tabulate(self.tabular_appearance[:-1], tablefmt="fancy_grid").split("\n")

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-w", "--write", action="store_true", required=False, help="Write current dwm configuration to edit [Use this before to edit dwm configuration] or reset your changes")
     parser.add_argument("-b", "--build", action="store_true", required=False, help="Save changes to dwm")
-    parser.add_argument("-g", "--get", action="store_true", required=False, help="Get default dwm settings (overrides current) to use dwmc, also runs -w flag")
+    parser.add_argument("-g", "--get", action="store_true", required=False, help="Get default dwm settings (overrides current) to use pdwm, also runs -w flag")
     parser.add_argument("-s", "--show", type=str, required=False,
             choices=["appearance", "buttons", "keys", "rules"])
     parser.add_argument("-c", "--change", type=str, required=False, help="Choose and change attribute",
