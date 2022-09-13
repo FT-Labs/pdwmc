@@ -432,7 +432,7 @@ class DwmParse:
             tags = 0 if tags == "" else int(tags)
             if tags < 0 or tags > 9:
                 raise ValueError
-            new_rule[3] = f"1 << {tags}"
+            new_rule[3] = f"1 << {tags - 1}"
             isfloating = input("isfloating: Input '1' to open your application in floating mode. Enter or 0 for default.\n")
             isfloating = 0 if isfloating == "" else int(isfloating)
             if isfloating < 0 or isfloating > 1:
