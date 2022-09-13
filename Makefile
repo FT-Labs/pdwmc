@@ -9,4 +9,8 @@ install:
 	cp -f ${SRC} ${PREFIX}/share/${PROG}/
 	ln -sf ${PREFIX}/share/${PROG}/${PROG} ${PREFIX}/bin/${PROG}
 
+uninstall:
+	rm -f ${PREFIX}/share/${PROG}
+	rm -f ${PREFIX}/bin/${PROG}
+
 .PHONY = all install
