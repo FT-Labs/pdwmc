@@ -10,7 +10,7 @@ install:
 	ln -sf ${DESTDIR}${PREFIX}/share/${PROG}/${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/share/${PROG}
-	rm -f ${DESTDIR}${PREFIX}/bin/${PROG}
+	rm -rf ${DESTDIR}${PREFIX}/share/${PROG}
+	rm -rf ${DESTDIR}${PREFIX}/bin/${PROG}
 
 .PHONY: all install uninstall
