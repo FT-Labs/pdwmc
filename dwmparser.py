@@ -381,7 +381,31 @@ class DwmParse:
 
     def change_key(self, isappend):
         if isappend:
-            pass
+            add_key = []
+            print("All keys must be prefixed with XK_[key].")
+            print("Example: XK_a for 'a'. Don't use capital letters.")
+            print("Use 'Shift' in modifier section for binding capital letters.")
+            new_key = input("Please enter the new modifier (Win, Alt, Shift, Control), you can add combinations with '|'.\nGive empty input for no modifier.\n")
+            new_key = "0" if new_key == "" else new_key
+            add_key.append(new_key)
+            new_key = input("Please enter the new key/keys.\n")
+            add_key.append(new_key)
+            events = ["ADD NEW ACTION (spawn a terminal command)"]
+            events.extend(list(keys_dict.values()))
+            term_menu = TerminalMenu(events, title="Select action:")
+            eventidx = term_menu.show()
+            if eventidx != 0:
+                add_key.append(events[eventidx])
+            else:
+                is_term = input("Will this command run on a terminal? [y|yes or n|no, empty input is no]\n")
+                if is_term != "y" and is_term != "" and is_term != "yes" and is_term != "n" and is_term != "no":
+                    sys.stderr("Please input a valid argument.")
+                    exit(1)
+                is_term = True if is_term == "y" or is_term == "yes" else False
+                command = input("Please enter your command.\n")
+                add_key.append(self.make_action(command, is_term))
+            self.tabular_keys.append(add_key)
+            self.write_tmp_files()
         else:
             t1 = tabulate.tabulate(self.tabular_keys, tablefmt="fancy_grid").split("\n")
             term_menu = TerminalMenu(t1, skip_empty_entries=True, cursor_index=1)
@@ -394,14 +418,54 @@ class DwmParse:
             self.write_tmp_files()
 
     def change_rule(self, isappend):
-        if isappend:
-            pass
-        else:
+        if not isappend:
             t1 = tabulate.tabulate(self.tabular_rules, tablefmt="fancy_grid").split("\n")
             term_menu = TerminalMenu(t1, skip_empty_entries=True, cursor_index=1)
             idx = term_menu.show()
             idx //= 2
-
+        print("Please click a window to parse class name.")
+        class_name, instance = subprocess.check_output("xprop | grep 'WM_CLASS' | tr -d ',' | awk '{print $NF,$(NF-1)}'", shell=True, text=True).strip("\n ").split(" ")
+        new_rule = [class_name, instance, "NULL", "0", "0", "0", "0", "0", "0", "-1"]
+        print(class_name)
+        try:
+            tags = input("tagsmask: Input a number between 1-9 to force open it in the given tag number. 0 or enter for default.\n")
+            tags = 0 if tags == "" else int(tags)
+            if tags < 0 or tags > 9:
+                raise ValueError
+            new_rule[3] = f"1 << {tags}"
+            isfloating = input("isfloating: Input '1' to open your application in floating mode. Enter or 0 for default.\n")
+            isfloating = 0 if isfloating == "" else int(isfloating)
+            if isfloating < 0 or isfloating > 1:
+                raise ValueError
+            new_rule[4] = str(isfloating)
+            isfloating = input("isterminal: Input '1' to run application in terminal. Enter or 0 for default.\n")
+            isfloating = 0 if isfloating == "" else int(isfloating)
+            if isfloating < 0 or isfloating > 1:
+                raise ValueError
+            new_rule[5] = str(isfloating)
+            isfloating = input("iscentered: Input '1' to position the application in the center of the screen. Enter or 0 for default.\n")
+            isfloating = 0 if isfloating == "" else int(isfloating)
+            if isfloating < 0 or isfloating > 1:
+                raise ValueError
+            new_rule[6] = str(isfloating)
+            isfloating = input("noswallow: Input '1' to prevent the application from swallowing. Enter or 0 for default.\n")
+            isfloating = 0 if isfloating == "" else int(isfloating)
+            if isfloating < 0 or isfloating > 1:
+                raise ValueError
+            new_rule[7] = str(isfloating)
+            isfloating = input("managedsize: Input '1' to allow dwm to set window size. Useful for floating windows if the base size is not sufficient.\nEnter or 0 for default.\n")
+            isfloating = 0 if isfloating == "" else int(isfloating)
+            if isfloating < 0 or isfloating > 1:
+                raise ValueError
+            new_rule[8] = str(isfloating)
+            print("Changing monitor will come soon.")
+            if isappend:
+                self.tabular_rules.append(new_rule)
+            else:
+                self.tabular_rules[idx] = new_rule
+            self.write_tmp_files()
+        except ValueError:
+            print("Please enter a valid number.")
 
     def print_appearance(self):
         t1 = tabulate.tabulate(self.tabular_appearance[:-1], tablefmt="fancy_grid").split("\n")
