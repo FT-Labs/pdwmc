@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from PyQt5 import QtCore, QtWidgets as qw, uic
-from dwmparser import DwmParse
+from PyQt5 import Qt, QtCore, QtWidgets as qw, uic
+from PyQt5 import *
 import sys
+import dwmparams as dp
 
 keymap = {}
 for key, value in vars(QtCore.Qt).items():
@@ -15,17 +16,40 @@ modmap = {
     QtCore.Qt.ShiftModifier: keymap[QtCore.Qt.Key_Shift],
     QtCore.Qt.MetaModifier: "Win",
     QtCore.Qt.GroupSwitchModifier: keymap[QtCore.Qt.Key_AltGr],
+    QtCore.Qt.Key_Super_L : "Win",
     QtCore.Qt.KeypadModifier: keymap[QtCore.Qt.Key_NumLock],
     }
 
 special_keys = ["Delete", "BackSpace", "Return", "Tab", "Escape", "Print"]
 
+class PopUp(qw.QDialog):
+    def __init__(self, labels):
+        qw.QDialog.__init__(self, None, QtCore.Qt.Popup | QtCore.Qt.FramelessWindowHint)
+        self.itemSelected = ""
+        self.setLayout(qw.QVBoxLayout())
+        lWidget = qw.QListWidget(self)
+        self.layout().addWidget(lWidget)
+        lWidget.addItems(labels)
+        lWidget.itemClicked.connect(self.onItemClicked)
+        lWidget.setMinimumWidth(lWidget.sizeHintForColumn(0))
+        # lWidget.setHeight()(lWidget.sizeHint().height())
+        # lWidget.setWidth(lWidget.sizeHintForColumn(0))
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+    def onItemClicked(self, item):
+        self.itemSelected = item.text()
+        self.accept()
+
+    def text(self):
+        return self.itemSelected
+
 def keyevent_to_string(event, col):
     sequence = []
-    if col == "MODIFIERS":
-        for modifier, text in modmap.items():
-            if event.modifiers() & modifier:
-                sequence.append(text)
+    for modifier, text in modmap.items():
+        if event.modifiers() & modifier:
+            if col != "MODIFIERS":
+                return
+            sequence.append(text)
 
     key = keymap.get(event.key(), event.text())
     if key not in sequence:
@@ -35,8 +59,6 @@ def keyevent_to_string(event, col):
             if key in modmap.values():
                 sequence.append(key)
         elif col == "KEY" and event.key() not in modmap:
-            if key == "Super_L":
-                key = "Win"
             if (key not in special_keys and (len(key) > 1 and key[0] != 'F')) or len(key) == 1:
                 key = "XK_" + key.lower()
             else:
@@ -45,23 +67,44 @@ def keyevent_to_string(event, col):
     return '|'.join(sequence)
 
 class TableWidget(qw.QTableWidget):
+
+    def set_popup(self, p):
+        self.pop_key_actions = p
+        self.pop_key_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+
     def keyPressEvent(self, event):
         s = keyevent_to_string(event, self.horizontalHeaderItem(self.currentColumn()).text())
         self.currentItem().setText(s)
+        self.resizeColumnsToContents()
         super(TableWidget, self).keyPressEvent(event)
 
+    def cell_clicked(self, row, col):
+        col_header = self.horizontalHeaderItem(col).text()
+        if col_header == "ACTION":
+            x = self.columnViewportPosition(col)
+            y = self.rowViewportPosition(row) + self.rowHeight(row)
+            pos = self.viewport().mapToGlobal(QtCore.QPoint(x, y))
+            self.pop_key_actions.move(pos)
+            self.pop_key_actions.adjustSize()
+            if self.pop_key_actions.exec_() == qw.QDialog.Accepted:
+                self.currentItem().setText(self.pop_key_actions.text())
+
 class PdwmGui(qw.QMainWindow):
-    def __init__(self):
+    def __init__(self, dwm_parser):
         super(PdwmGui, self).__init__()
         uic.loadUi('main.ui', self)
-        self.dwm_parser = DwmParse()
+        self.dwm_parser = dwm_parser
         self.dwm_parser.get_files("/buttons", "/keys", "/appearance", "rules")
         self.dwm_parser.make_tables()
         self.t_keys = TableWidget(self.tab_keys)
         self.t_keys.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
-        self.t_keys.setAutoScroll(False)
+        self.t_keys.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_keys.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_keys.setAutoScroll(True)
         self.t_keys.setObjectName("t_keys")
         self.t_keys.setEditTriggers(qw.QAbstractItemView.NoEditTriggers)
+        self.t_keys.cellClicked.connect(self.t_keys.cell_clicked)
+        self.t_keys.set_popup(PopUp(list(dp.keys_dict.values())))
         self.gridLayout_5.addWidget(self.t_keys, 0, 0, 1, 1)
         self.set_buttons_table()
         self.set_keys_table()
