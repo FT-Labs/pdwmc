@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from PyQt5 import Qt, QtCore, QtWidgets as qw, uic
+from PyQt5 import QtCore, QtWidgets as qw, uic
 from PyQt5 import *
 import sys
 import dwmparams as dp
@@ -48,14 +48,12 @@ def keyevent_to_string(event, col):
     for modifier, text in modmap.items():
         if event.modifiers() & modifier:
             if col != "MODIFIERS":
-                return
+                return "0"
             sequence.append(text)
 
     key = keymap.get(event.key(), event.text())
     if key not in sequence:
         if col == "MODIFIERS":
-            if key == "Super_L":
-                key = "Win"
             if key in modmap.values():
                 sequence.append(key)
         elif col == "KEY" and event.key() not in modmap:
@@ -64,13 +62,11 @@ def keyevent_to_string(event, col):
             else:
                 key = "XK_" + key
             sequence.append(key)
-    return '|'.join(sequence)
+    return '|'.join(sequence) if sequence else "0"
 
 class TableWidget(qw.QTableWidget):
 
-    def set_popup(self, p, d):
-        self.pop_key_actions = p
-        self.pop_key_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+    def set_dialog(self, d):
         self.dialog = d
 
     def keyPressEvent(self, event):
@@ -84,17 +80,6 @@ class TableWidget(qw.QTableWidget):
                 self.dialog.show()
             super(TableWidget, self).keyPressEvent(event)
 
-    def cell_clicked(self, row, col):
-        col_header = self.horizontalHeaderItem(col).text()
-        if col_header == "ACTION":
-            x = self.columnViewportPosition(col)
-            y = self.rowViewportPosition(row) + self.rowHeight(row)
-            pos = self.viewport().mapToGlobal(QtCore.QPoint(x, y))
-            self.pop_key_actions.move(pos)
-            self.pop_key_actions.adjustSize()
-            if self.pop_key_actions.exec_() == qw.QDialog.Accepted:
-                self.currentItem().setText(self.pop_key_actions.text())
-
 class PdwmCommandDialog(qw.QDialog):
     def __init__(self):
         super(PdwmCommandDialog, self).__init__()
@@ -105,45 +90,140 @@ class PdwmGui(qw.QMainWindow):
     def __init__(self, dwm_parser):
         super(PdwmGui, self).__init__()
         uic.loadUi('main.ui', self)
-        self.d_custom_action = PdwmCommandDialog()
-        self.d_custom_action.accepted.connect(self.custom_action_accepted)
         self.dwm_parser = dwm_parser
         self.dwm_parser.get_files("/buttons", "/keys", "/appearance", "rules")
+        self.dwm_parser.update()
+        self.d_custom_action = PdwmCommandDialog()
+        self.d_custom_action.accepted.connect(self.custom_action_accepted)
+        self.pop_key_actions = PopUp(list(dp.keys_dict.values()))
+        self.pop_key_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+        self.pop_button_actions = PopUp(list(dp.buttons_dict.values()))
+        self.pop_button_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+        self.pop_button_clickwin = PopUp(["ClkClientWin", "ClkRootWin", "ClkTagBar", "ClkStatusText", "ClkLtSymbol"])
+        self.pop_button_clickwin.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+        self.pop_button_buttons = PopUp(["LeftClick", "RightClick", "MiddleClick", "WheelUp", "WheelDown"])
+        self.pop_button_buttons.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
         self.dwm_parser.make_tables()
         self.t_keys = TableWidget(self.tab_keys)
         self.t_keys.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
         self.t_keys.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_keys.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_keys.setObjectName("t_keys")
-        self.t_keys.cellClicked.connect(self.t_keys.cell_clicked)
         self.t_keys.cellDoubleClicked.connect(self.t_keys_cell_double_clicked)
-        self.t_keys.set_popup(PopUp(list(dp.keys_dict.values())), self.d_custom_action)
+        self.t_keys.set_dialog(self.d_custom_action)
         self.gridLayout_5.addWidget(self.t_keys, 0, 0, 1, 1)
+
+        self.action_close.triggered.connect(lambda : sys.exit())
+        self.action_save.triggered.connect(self.save_config)
+        self.action_savebuild.triggered.connect(lambda : (self.save_config(), self.dwm_parser.build_dwm()))
+        self.pb_key.clicked.connect(self.t_keys_add)
+        self.pb_button.clicked.connect(self.t_buttons_add)
+        self.pb_key_delete.clicked.connect(lambda : self.t_keys.removeRow(self.t_keys.currentRow()))
+        self.pb_button_delete.clicked.connect(lambda : self.t_buttons.removeRow(self.t_buttons.currentRow()))
+        self.t_buttons = TableWidget(self.tab_buttons)
+        self.t_buttons.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_buttons.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_buttons.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
+        self.t_buttons.setAutoScroll(False)
+        self.t_buttons.setObjectName("t_buttons")
+        self.t_buttons.set_dialog(self.d_custom_action)
+        self.t_buttons.cellDoubleClicked.connect(self.t_buttons_cell_double_clicked)
+        self.gridLayout_4.addWidget(self.t_buttons, 0, 0, 1, 1)
+
+        self.t_appr.itemChanged.connect(self.t_appr_check_item)
+
         self.set_buttons_table()
         self.set_keys_table()
         self.set_appr_table()
+
+    def build(self):
+        self.save_config()
+        self.dwm_parser.build_dwm()
+
+    def t_appr_check_item(self, item):
+        try:
+            if int(item.text()) < 0:
+                raise ValueError
+            self.t_appr.resizeColumnsToContents()
+        except:
+            if (item.flags() & QtCore.Qt.ItemIsEditable):
+                item.setText("0")
+
+    def t_keys_add(self):
+        self.t_keys.insertRow(self.t_keys.rowCount())
+        for j in range(self.t_keys.columnCount()):
+            new_item = qw.QTableWidgetItem()
+            if j == 2 or j == 0:
+                new_item.setFlags(new_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            self.t_keys.setItem(self.t_keys.rowCount() - 1, j, new_item)
+
+    def t_buttons_add(self):
+        self.t_buttons.insertRow(self.t_buttons.rowCount())
+        for j in range(self.t_buttons.columnCount()):
+            new_item = qw.QTableWidgetItem()
+            new_item.setFlags(new_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            self.t_buttons.setItem(self.t_buttons.rowCount() - 1, j, new_item)
+
+    def t_buttons_cell_double_clicked(self, row, col):
+        col_header = self.t_buttons.horizontalHeaderItem(col).text()
+        if col_header != "MODIFIERS":
+            x = self.t_buttons.columnViewportPosition(col)
+            y = self.t_buttons.rowViewportPosition(row) + self.t_keys.rowHeight(row)
+            pos = self.t_buttons.viewport().mapToGlobal(QtCore.QPoint(x, y))
+
+            if col_header == "ACTION":
+                self.pop_button_actions.move(pos)
+                self.pop_button_actions.adjustSize()
+                if self.pop_button_actions.exec_() == qw.QDialog.Accepted:
+                    self.t_buttons.currentItem().setText(self.pop_button_actions.text())
+            elif col_header == "CLICK WIN":
+                self.pop_button_clickwin.move(pos)
+                self.pop_button_clickwin.adjustSize()
+                if self.pop_button_clickwin.exec_() == qw.QDialog.Accepted:
+                    self.t_buttons.currentItem().setText(self.pop_button_clickwin.text())
+            else:
+                self.pop_button_buttons.move(pos)
+                self.pop_button_buttons.adjustSize()
+                if self.pop_button_buttons.exec_() == qw.QDialog.Accepted:
+                    self.t_buttons.currentItem().setText(self.pop_button_buttons.text())
+
+    def t_keys_cell_double_clicked(self, row, col):
+        col_header = self.t_keys.horizontalHeaderItem(col).text()
+        if col_header == "ACTION":
+            x = self.t_keys.columnViewportPosition(col)
+            y = self.t_keys.rowViewportPosition(row) + self.t_keys.rowHeight(row)
+            pos = self.t_keys.viewport().mapToGlobal(QtCore.QPoint(x, y))
+            self.pop_key_actions.move(pos)
+            self.pop_key_actions.adjustSize()
+            if self.pop_key_actions.exec_() == qw.QDialog.Accepted:
+                self.t_keys.currentItem().setText(self.pop_key_actions.text())
 
     def custom_action_accepted(self):
         is_term = self.d_custom_action.c_isterminal.isChecked()
         command = self.d_custom_action.le_command.text()
         cmd = self.dwm_parser.make_action(command, is_term)
-        self.t_keys.currentItem().setText(cmd)
-
-    def t_keys_cell_double_clicked(self):
-        header = self.t_keys.horizontalHeaderItem(self.t_keys.currentColumn()).text()
-        if header == "ACTION":
-            self.d_custom_action.show()
-            self.d_custom_action.adjustSize()
+        if self.tab_widget.tabText(self.tab_widget.currentIndex()) == "KEYS":
+            self.t_keys.currentItem().setText(cmd)
+            self.t_keys.resizeColumnsToContents()
+            self.adjustSize()
+        else:
+            self.t_buttons.currentItem().setText(cmd)
+            self.t_buttons.resizeColumnsToContents()
 
     def set_appr_table(self):
+        h = ["ATTRIBUTE", "VALUE"]
         self.t_appr.setColumnCount(2)
         self.t_appr.setRowCount(len(self.dwm_parser.tabular_appearance[:-1]))
         for i, arr in enumerate(self.dwm_parser.tabular_appearance[:-1]):
             for j, attr in enumerate(arr):
                 new_item = qw.QTableWidgetItem(attr)
+                if j == 0:
+                    new_item.setFlags(new_item.flags() & ~QtCore.Qt.ItemIsEditable)
+                else:
+                    new_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.t_appr.setItem(i, j, new_item)
+        self.t_appr.setHorizontalHeaderLabels(h)
         self.t_appr.resizeColumnsToContents()
-        self.t_appr.resizeRowsToContents()
 
         self.t_fonts.setColumnCount(1)
         self.t_fonts.setRowCount(len(self.dwm_parser.tabular_appearance[-1]))
@@ -151,19 +231,18 @@ class PdwmGui(qw.QMainWindow):
             new_item = qw.QTableWidgetItem(arr)
             self.t_fonts.setItem(i, 0, new_item)
         self.t_fonts.resizeColumnsToContents()
-        self.t_fonts.resizeRowsToContents()
         self.t_fonts.setHorizontalHeaderLabels(["FONTS"])
     def set_buttons_table(self):
-        h = ["CLICK WIN", "KEY", "BUTTON", "ACTION"]
+        h = ["CLICK WIN", "MODIFIERS", "BUTTON", "ACTION"]
         self.t_buttons.setColumnCount(len(h))
         self.t_buttons.setRowCount(len(self.dwm_parser.tabular_buttons))
         for i, arr in enumerate(self.dwm_parser.tabular_buttons):
             for j, attr in enumerate(arr):
                 new_item = qw.QTableWidgetItem(attr)
                 self.t_buttons.setItem(i, j, new_item)
+                new_item.setFlags(new_item.flags() & ~QtCore.Qt.ItemIsEditable)
         self.t_buttons.setHorizontalHeaderLabels(h)
         self.t_buttons.resizeColumnsToContents()
-        self.t_buttons.resizeRowsToContents()
 
     def set_keys_table(self):
         h = ["MODIFIERS", "KEY", "ACTION"]
@@ -177,7 +256,6 @@ class PdwmGui(qw.QMainWindow):
                 self.t_keys.setItem(i, j, new_item)
         self.t_keys.setHorizontalHeaderLabels(h)
         self.t_keys.resizeColumnsToContents()
-        self.t_keys.resizeRowsToContents()
 
     def set_rules_table(self):
         h = ["CLASS", "INSTANCE", "TITLE", "TAGS", "ISFLOATING", "ISTERMINAL", "ISCENTERED", "NOSWALLOW", "MANAGEDSIZE", "MON"]
@@ -189,7 +267,32 @@ class PdwmGui(qw.QMainWindow):
                 self.t_rules.setItem(i, j, new_item)
         self.t_rules.setHorizontalHeaderLabels(h)
         self.t_rules.resizeColumnsToContents()
-        self.t_rules.resizeRowsToContents()
+
+    def save_config(self):
+        self.dwm_parser.tabular_keys.clear()
+        self.dwm_parser.tabular_buttons.clear()
+        self.dwm_parser.tabular_appearance.clear()
+
+        for i in range(self.t_keys.rowCount()):
+            self.dwm_parser.tabular_keys.append([])
+            for j in range(self.t_keys.columnCount()):
+                self.dwm_parser.tabular_keys[i].append(self.t_keys.item(i, j).text())
+
+        for i in range(self.t_buttons.rowCount()):
+            self.dwm_parser.tabular_buttons.append([])
+            for j in range(self.t_buttons.columnCount()):
+                self.dwm_parser.tabular_buttons[i].append(self.t_buttons.item(i, j).text())
+
+        for i in range(self.t_appr.rowCount()):
+            self.dwm_parser.tabular_appearance.append([])
+            for j in range(self.t_appr.columnCount()):
+                self.dwm_parser.tabular_appearance[i].append(self.t_appr.item(i, j).text())
+
+        self.dwm_parser.tabular_appearance.append([])
+        for i in range(self.t_fonts.rowCount()):
+            self.dwm_parser.tabular_appearance[-1].append(self.t_fonts.item(i, 0).text())
+
+        self.dwm_parser.write_tmp_files()
 
 if __name__ == "__main__":
     app = qw.QApplication(sys.argv)

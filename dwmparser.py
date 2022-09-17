@@ -483,7 +483,7 @@ class DwmParse:
             print(c)
 
     def print_buttons(self):
-        h = ["CLICK WIN", "KEY", "BUTTON", "ACTION"]
+        h = ["CLICK WIN", "MODIFIERS", "BUTTON", "ACTION"]
         print(tabulate.tabulate(self.tabular_buttons, headers=h, tablefmt="fancy_grid"))
 
     def print_keys(self):
