@@ -231,6 +231,24 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QPushButton" name="pb_rule_add">
+            <property name="text">
+             <string>ADD RULE</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_rule_delete">
+            <property name="text">
+             <string>DELETE RULE</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>

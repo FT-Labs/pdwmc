@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtWidgets as qw, uic
 from PyQt5 import *
 import sys
 import dwmparams as dp
+import subprocess
 
 
 keymap = {}
@@ -91,7 +92,7 @@ class PdwmGui(qw.QMainWindow):
         super(PdwmGui, self).__init__()
         uic.loadUi('main.ui', self)
         self.dwm_parser = dwm_parser
-        self.dwm_parser.get_files("/buttons", "/keys", "/appearance", "rules")
+        self.dwm_parser.get_files("/buttons", "/keys", "/appearance", "/rules")
         self.dwm_parser.update()
         self.d_custom_action = PdwmCommandDialog()
         self.d_custom_action.accepted.connect(self.custom_action_accepted)
@@ -120,6 +121,7 @@ class PdwmGui(qw.QMainWindow):
         self.pb_button.clicked.connect(self.t_buttons_add)
         self.pb_key_delete.clicked.connect(lambda : self.t_keys.removeRow(self.t_keys.currentRow()))
         self.pb_button_delete.clicked.connect(lambda : self.t_buttons.removeRow(self.t_buttons.currentRow()))
+        self.pb_rule_add.clicked.connect(self.t_rules_add_rule)
         self.t_buttons = TableWidget(self.tab_buttons)
         self.t_buttons.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_buttons.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -135,10 +137,22 @@ class PdwmGui(qw.QMainWindow):
         self.set_buttons_table()
         self.set_keys_table()
         self.set_appr_table()
+        self.set_rules_table()
 
     def build(self):
         self.save_config()
         self.dwm_parser.build_dwm()
+
+    def t_rules_add_rule(self):
+        subprocess.run(["dunstify", "-a", "center", "PLEASE CLICK A WINDOW TO SET A RULE"])
+        class_name, instance = subprocess.check_output("xprop | grep 'WM_CLASS' | tr -d ',' | awk '{print $NF,$(NF-1)}'", shell=True, text=True).strip("\n ").split(" ")
+        new_rule = [class_name, instance, "NULL", "0", "0", "0", "0", "0", "0", "-1"]
+        self.t_rules.insertRow(self.t_rules.rowCount())
+        for j in range(self.t_rules.columnCount()):
+            new_item = qw.QTableWidgetItem()
+            new_item.setText(new_rule[j])
+            self.t_rules.setItem(self.t_rules.rowCount() - 1, j, new_item)
+
 
     def t_appr_check_item(self, item):
         try:
@@ -260,7 +274,7 @@ class PdwmGui(qw.QMainWindow):
     def set_rules_table(self):
         h = ["CLASS", "INSTANCE", "TITLE", "TAGS", "ISFLOATING", "ISTERMINAL", "ISCENTERED", "NOSWALLOW", "MANAGEDSIZE", "MON"]
         self.t_rules.setColumnCount(len(h))
-        self.t_rules.setRowCount(len(self.dwm_parser.tabular_buttons))
+        self.t_rules.setRowCount(len(self.dwm_parser.tabular_rules))
         for i, arr in enumerate(self.dwm_parser.tabular_rules):
             for j, attr in enumerate(arr):
                 new_item = qw.QTableWidgetItem(attr)
