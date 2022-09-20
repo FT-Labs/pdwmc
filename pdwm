@@ -70,6 +70,14 @@ if __name__ == "__main__":
     elif args.build:
         dwm_parse.build_dwm()
     elif args.qt:
+        cpath = u.set_dwm_cache_dir()
+        if not os.path.exists(cpath):
+            u.write_default_settings()
+            dwm_parse.get_files("/appearance", "/buttons", "/keys", "/rules")
+            dwm_parse.make_tables()
+            dwm_parse.write_tmp_files()
+            dwm_parse = DwmParse()
+
         app = qw.QApplication(sys.argv)
         pdwmGui = PdwmGui(dwm_parse)
         pdwmGui.show()

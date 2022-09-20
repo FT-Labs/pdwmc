@@ -37,6 +37,7 @@ class DwmParse:
         os.chdir(self.data_dir)
         os.system("gcc -c dwm-conf.c -fPIC")
         os.system("gcc -shared dwm-conf.o -o libdwm-conf.so")
+        os.system("pOS-powermenu restart")
 
     def delete_attr(self, attr):
         if attr == self.tabular_appearance:

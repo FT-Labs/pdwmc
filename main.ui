@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>943</width>
-    <height>649</height>
+    <width>1051</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Pdwm Gui</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>/usr/share/pixmaps/phyOS-logo.svg</normaloff>/usr/share/pixmaps/phyOS-logo.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -31,14 +35,29 @@
            <enum>QLayout::SetMaximumSize</enum>
           </property>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="label_pwdm_welcome">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Welcome to pdwm GUI config application.</string>
+             <string>Welcome to pdwm gui application! You can configure dwm from here.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -49,14 +68,36 @@
              <bool>false</bool>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignHCenter|Qt::AlignTop</set>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_3">
+            <property name="frameShape">
+             <enum>QFrame::WinPanel</enum>
+            </property>
             <property name="text">
-             <string>Modifier Keys = WIn | Shift | Control | Alt</string>
+             <string>
+Modifier Keys = Win | Shift | Control | Alt
+
+- In modifiers section in any tab, select key/button you want to change and press modifiers from your keyboard. It should automatically insert them, MODIFIERS section is uneditable.
+- In KEYS tab, press your keyboard to detect any key. Note that you can't combine keys, only modifiers can be combined. If key is not detected, you can double click to edit it by hand. Be sure that you write the correct keysym, otherwise you will get a compile error.
+- ACTION, CLICK WIN, BUTTON are special. Double click on them for a pop-up menu, choose required option from there.
+- As for custom action (command), press 'ENTER' key to add a custom command. It will open a dialog and ask questions.
+- For appearance tab, just double click and edit the values.
+- Use top left menu to save/build dwm configuration.
+- Note that this is originally a terminal application. If any issues occur, use **pdwm -h** to check options. **pdwm -g** to get default config.
+            </string>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::MarkdownText</enum>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -261,7 +302,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>943</width>
+     <width>1051</width>
      <height>20</height>
     </rect>
    </property>
