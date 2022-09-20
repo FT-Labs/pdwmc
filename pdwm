@@ -3,8 +3,11 @@
 from dwmparser import *
 import argparse
 from pdwmgui import *
+import os
+
 
 if __name__ == "__main__":
+    os.chdir("/usr/share/pdwm/")
     dwm_parse = DwmParse()
 
     parser = argparse.ArgumentParser()
