@@ -52,9 +52,11 @@ def keyevent_to_string(event, col):
                 return "0"
             sequence.append(text)
 
-    key = keymap.get(event.key(), event.text())
+    key = keymap.get(event.key(), event.text()) if event.key() != QtCore.Qt.Key_Super_L else "Win"
     if key not in sequence:
         if col == "MODIFIERS":
+            if key == "Escape":
+                key = "Win"
             if key in modmap.values():
                 sequence.append(key)
         elif col == "KEY" and event.key() not in modmap:
