@@ -5,6 +5,7 @@ from PyQt5 import *
 import sys
 import dwmparams as dp
 import subprocess
+from math import log2
 
 
 keymap = {}
@@ -279,6 +280,8 @@ class PdwmGui(qw.QMainWindow):
         self.t_rules.setRowCount(len(self.dwm_parser.tabular_rules))
         for i, arr in enumerate(self.dwm_parser.tabular_rules):
             for j, attr in enumerate(arr):
+                if j == 3:
+                    attr = str(int(log2(eval(attr)) + 1))
                 new_item = qw.QTableWidgetItem(attr)
                 self.t_rules.setItem(i, j, new_item)
         self.t_rules.setHorizontalHeaderLabels(h)
@@ -303,7 +306,14 @@ class PdwmGui(qw.QMainWindow):
         for i in range(self.t_rules.rowCount()):
             self.dwm_parser.tabular_rules.append([])
             for j in range(self.t_rules.columnCount()):
-                self.dwm_parser.tabular_rules[i].append(self.t_rules.item(i, j).text())
+                if j != 3:
+                    self.dwm_parser.tabular_rules[i].append(self.t_rules.item(i, j).text())
+                else:
+                    t = eval(self.t_rules.item(i, j).text())
+                    if t != 0:
+                        t -= 1
+                    s = f"1 << {t}"
+                    self.dwm_parser.tabular_rules[i].append(s)
 
         for i in range(self.t_appr.rowCount()):
             self.dwm_parser.tabular_appearance.append([])
