@@ -288,6 +288,7 @@ class PdwmGui(qw.QMainWindow):
         self.dwm_parser.tabular_keys.clear()
         self.dwm_parser.tabular_buttons.clear()
         self.dwm_parser.tabular_appearance.clear()
+        self.dwm_parser.tabular_rules.clear()
 
         for i in range(self.t_keys.rowCount()):
             self.dwm_parser.tabular_keys.append([])
@@ -298,6 +299,11 @@ class PdwmGui(qw.QMainWindow):
             self.dwm_parser.tabular_buttons.append([])
             for j in range(self.t_buttons.columnCount()):
                 self.dwm_parser.tabular_buttons[i].append(self.t_buttons.item(i, j).text())
+
+        for i in range(self.t_rules.rowCount()):
+            self.dwm_parser.tabular_rules.append([])
+            for j in range(self.t_rules.columnCount()):
+                self.dwm_parser.tabular_rules[i].append(self.t_rules.item(i, j).text())
 
         for i in range(self.t_appr.rowCount()):
             self.dwm_parser.tabular_appearance.append([])
