@@ -281,7 +281,8 @@ class PdwmGui(qw.QMainWindow):
         for i, arr in enumerate(self.dwm_parser.tabular_rules):
             for j, attr in enumerate(arr):
                 if j == 3:
-                    attr = str(int(log2(eval(attr)) + 1))
+                    attr = eval(attr)
+                    attr = '0' if attr == 0 else str(int(log2(attr) + 1))
                 new_item = qw.QTableWidgetItem(attr)
                 self.t_rules.setItem(i, j, new_item)
         self.t_rules.setHorizontalHeaderLabels(h)
@@ -312,7 +313,9 @@ class PdwmGui(qw.QMainWindow):
                     t = eval(self.t_rules.item(i, j).text())
                     if t != 0:
                         t -= 1
-                    s = f"1 << {t}"
+                        s = f"1 << {t}"
+                    else:
+                        s = "0"
                     self.dwm_parser.tabular_rules[i].append(s)
 
         for i in range(self.t_appr.rowCount()):
