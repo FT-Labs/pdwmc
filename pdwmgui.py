@@ -125,6 +125,7 @@ class PdwmGui(qw.QMainWindow):
         self.pb_key_delete.clicked.connect(lambda : self.t_keys.removeRow(self.t_keys.currentRow()))
         self.pb_button_delete.clicked.connect(lambda : self.t_buttons.removeRow(self.t_buttons.currentRow()))
         self.pb_rule_add.clicked.connect(self.t_rules_add_rule)
+        self.pb_rule_delete.clicked.connect(lambda : self.t_rules.removeRow(self.t_rules.currentRow()))
         self.t_buttons = TableWidget(self.tab_buttons)
         self.t_buttons.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_buttons.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
