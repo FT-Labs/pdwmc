@@ -311,6 +311,7 @@ class DwmParse:
             print("Please enter an integer number")
 
     def change_button(self, isappend):
+        buttons = ["LeftClick", "RightClick", "MiddleClick", "WheelUp", "WheelDown"]
         if isappend:
             add_button = []
             events = ["ClkStatusText", "ClkRootWin", "ClkClientWin", "ClkLtSymbol", "ClkTagBar"]
@@ -320,9 +321,10 @@ class DwmParse:
             new_button = input("Please enter the new modifier (Win, Alt, Shift, Control), you can add combinations with '|'.\nGive empty input for no modifier.\n")
             new_button = "0" if new_button == "" else new_button
             add_button.append(new_button)
-            new_button = input("Please enter the new mouse button.\n")
+            term_menu = TerminalMenu(buttons)
+            new_button = buttons[term_menu.show()]
             add_button.append(new_button)
-            events = ["ADD NEW ACTION (spawn a terminal command)"]
+            events = ["ADD NEW ACTION (spawn a command)"]
             events.extend(list(buttons_dict.values()))
             term_menu = TerminalMenu(events, title="Select action:")
             eventidx = term_menu.show()
@@ -335,7 +337,7 @@ class DwmParse:
                     exit(1)
                 is_term = True if is_term == "y" or is_term == "yes" else False
                 command = input("Please enter your command.\n")
-                add_button.append(self.make_action(command if not is_term else "TERM(" + command + ")"))
+                add_button.append(command if not is_term else "TERM(" + command + ")")
             self.tabular_buttons.append(add_button)
             self.write_tmp_files()
         else:
@@ -350,7 +352,8 @@ class DwmParse:
             new_button = input("Please enter the new modifier (Win, Alt, ShiftMask), you can add combinations with '|'.\nGive empty input for no modifier.\n")
             new_button = "0" if new_button == "" else new_button
             self.tabular_buttons[idx][1] = new_button
-            new_button = input("Please enter the new mouse button.\n")
+            term_menu = TerminalMenu(buttons)
+            new_button = buttons[term_menu.show()]
             self.tabular_buttons[idx][2] = new_button
             self.write_tmp_files()
 
@@ -428,7 +431,7 @@ class DwmParse:
                     exit(1)
                 is_term = True if is_term == "y" or is_term == "yes" else False
                 command = input("Please enter your command.\n")
-                add_key.append(self.make_action(command, command if not is_term else "TERM(" + command + ")"))
+                add_key.append(command if not is_term else "TERM(" + command + ")")
             self.tabular_keys.append(add_key)
             self.write_tmp_files()
         else:

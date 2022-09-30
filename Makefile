@@ -1,4 +1,4 @@
-PROG = pdwm
+PROG = pdwmc
 SRC = ${PROG} utils.py dwmparser.py dwmparams.py pdwmgui.py dialog.ui main.ui
 
 PREFIX = /usr
