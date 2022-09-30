@@ -91,6 +91,8 @@ class DwmParse:
                 params = t.strip("\n").split(", ", maxsplit=2)
                 if params[-1] in keys_dict:
                     params[-1] = keys_dict[params[-1]]
+                else:
+                    params[-1] = self.parse_action(params[-1])
                 self.tabular_keys.append(params)
 
     def table_buttons(self):
@@ -104,6 +106,8 @@ class DwmParse:
                 params = t.strip("\n").split(", ", maxsplit=3)
                 if params[-1] in buttons_dict:
                     params[-1] = buttons_dict[params[-1]]
+                else:
+                    params[-1] = self.parse_action(params[-1])
                 self.tabular_buttons.append(params)
 
     def table_rules(self):
@@ -117,12 +121,28 @@ class DwmParse:
                 params = t.strip("\n").split(", ")
                 self.tabular_rules.append(params)
 
-    def make_action(self, command, is_terminal):
+    def make_action(self, command):
+        if "TERM" in command:
+            command = command[4:].strip("()")
+            is_terminal = True
+        else:
+            is_terminal = False
+
         cmd = 'spawn, SHCMD('
         if is_terminal:
             cmd += f'MAKETERM(TERMINAL, " -e {command}"))'
         else:
             cmd += f'"{command}")'
+        return cmd
+
+    def parse_action(self, command):
+        cmd = ""
+        if "MAKETERM" in command:
+            command = command.replace(" -e ", "").split('"')
+            cmd += "TERM(" + command[1] + ")"
+        else:
+            command = command.split('"')
+            cmd = command[1]
         return cmd
 
     def make_tables(self):
@@ -232,6 +252,8 @@ class DwmParse:
                     arr = l.strip("\n").split(", ", maxsplit=2)
                     if arr[-1] in keys_dict.values():
                         arr[-1] = u.get_key_from_value(keys_dict, arr[-1])
+                    else:
+                        arr[-1] = self.make_action(arr[-1])
                     arr = ", ".join(arr)
                     line_val = "struct Key key = {" + arr + "};"
                     ast = self.cparser.parse(line_val)
@@ -247,6 +269,8 @@ class DwmParse:
                     arr = l.strip("\n").split(", ", maxsplit=3)
                     if arr[-1] in buttons_dict.values():
                         arr[-1] = u.get_key_from_value(buttons_dict, arr[-1])
+                    else:
+                        arr[-1] = self.make_action(arr[-1])
                     arr = ", ".join(arr)
                     line_val = "struct Button button = {" + arr + "};"
                     ast = self.cparser.parse(line_val)
@@ -311,7 +335,7 @@ class DwmParse:
                     exit(1)
                 is_term = True if is_term == "y" or is_term == "yes" else False
                 command = input("Please enter your command.\n")
-                add_button.append(self.make_action(command, is_term))
+                add_button.append(self.make_action(command if not is_term else "TERM(" + command + ")"))
             self.tabular_buttons.append(add_button)
             self.write_tmp_files()
         else:
@@ -404,7 +428,7 @@ class DwmParse:
                     exit(1)
                 is_term = True if is_term == "y" or is_term == "yes" else False
                 command = input("Please enter your command.\n")
-                add_key.append(self.make_action(command, is_term))
+                add_key.append(self.make_action(command, command if not is_term else "TERM(" + command + ")"))
             self.tabular_keys.append(add_key)
             self.write_tmp_files()
         else:

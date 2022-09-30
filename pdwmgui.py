@@ -218,8 +218,9 @@ class PdwmGui(qw.QMainWindow):
 
     def custom_action_accepted(self):
         is_term = self.d_custom_action.c_isterminal.isChecked()
-        command = self.d_custom_action.le_command.text()
-        cmd = self.dwm_parser.make_action(command, is_term)
+        cmd = self.d_custom_action.le_command.text()
+        if is_term:
+            cmd = "TERM(" + cmd + ")"
         if self.tab_widget.tabText(self.tab_widget.currentIndex()) == "KEYS":
             self.t_keys.currentItem().setText(cmd)
             self.t_keys.resizeColumnsToContents()
