@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>/usr/share/pixmaps/phyOS-logo.svg</normaloff>/usr/share/pixmaps/phyOS-logo.svg</iconset>
+    <normaloff>../../../../../../usr/share/pixmaps/phyOS-logo.svg</normaloff>../../../../../../usr/share/pixmaps/phyOS-logo.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -292,6 +292,29 @@ Modifier Keys = Win | Shift | Control | Alt
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>COLORS</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_17">
+        <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+         <widget class="QTableWidget" name="t_colors">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="autoScroll">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -303,7 +326,7 @@ Modifier Keys = Win | Shift | Control | Alt
      <x>0</x>
      <y>0</y>
      <width>1051</width>
-     <height>20</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

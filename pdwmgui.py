@@ -101,6 +101,7 @@ class PdwmGui(qw.QMainWindow):
         self.d_custom_action.accepted.connect(self.custom_action_accepted)
         self.pop_key_actions = PopUp(list(dp.keys_dict.values()))
         self.pop_key_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
+        self.pop_colorschemes = PopUp(self.get_schemes())
         self.pop_button_actions = PopUp(list(dp.buttons_dict.values()))
         self.pop_button_actions.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
         self.pop_button_clickwin = PopUp(["ClkClientWin", "ClkRootWin", "ClkTagBar", "ClkStatusText", "ClkLtSymbol"])
@@ -142,10 +143,16 @@ class PdwmGui(qw.QMainWindow):
         self.set_keys_table()
         self.set_appr_table()
         self.set_rules_table()
+        self.set_colors_table()
 
     def build(self):
         self.save_config()
         self.dwm_parser.build_dwm()
+
+    def get_schemes(self):
+        cmd = "ls /usr/share/phyos/config/rofi/colors | tr '.' ' ' | awk '{print $1}'"
+        col_arr = subprocess.check_output(cmd, text=True, shell=True)
+        return str(col_arr).strip('\n').split("\n")
 
     def t_rules_add_rule(self):
         subprocess.run(["dunstify", "-a", "center", "PLEASE CLICK A WINDOW TO SET A RULE"])
@@ -204,6 +211,7 @@ class PdwmGui(qw.QMainWindow):
                 self.pop_button_buttons.adjustSize()
                 if self.pop_button_buttons.exec_() == qw.QDialog.Accepted:
                     self.t_buttons.currentItem().setText(self.pop_button_buttons.text())
+
 
     def t_keys_cell_double_clicked(self, row, col):
         col_header = self.t_keys.horizontalHeaderItem(col).text()
@@ -290,6 +298,39 @@ class PdwmGui(qw.QMainWindow):
         self.t_rules.setHorizontalHeaderLabels(h)
         self.t_rules.resizeColumnsToContents()
 
+    def t_colors_header_clicked(self, idx):
+            x = self.t_colors.columnViewportPosition(idx)
+            y = self.t_colors.rowViewportPosition(idx)
+            pos = self.t_colors.viewport().mapToGlobal(QtCore.QPoint(x, y))
+            self.pop_colorschemes.move(pos)
+            self.pop_colorschemes.adjustSize()
+
+            if self.pop_colorschemes.exec_() == qw.QDialog.Accepted:
+                cmd = f'cat /usr/share/phyos/config/rofi/colors/{self.pop_colorschemes.text()}.rasi | grep "#" | awk \'{{print $2}}\' | cut -c  -7'
+                col_arr = str(subprocess.check_output(cmd, text=True, shell=True)).strip("\n").split("\n")
+
+                for i in range(7):
+                    self.t_colors.item(i, 1).setText(col_arr[i])
+                self.t_colors.resizeColumnsToContents()
+
+    def set_colors_table(self):
+        h = ["CLICK TO SHOW COLORSCHEMES", ""]
+        self.t_colors.setColumnCount(2)
+        self.t_colors.setRowCount(7)
+        cmd = 'cat ~/.config/phyos/pdwm/colors.h | grep "#" | awk \'{print $5}\' | tr -d \'";\''
+        hex_arr = str(subprocess.check_output(cmd, shell=True, text=True)).strip('\n').split("\n")
+        col_arr = ["black", "gray2", "blue2", "white", "blue", "green", "red"]
+
+        for i in range(7):
+            new_item = qw.QTableWidgetItem(col_arr[i])
+            new_item.setFlags(new_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            self.t_colors.setItem(i, 0, new_item)
+            new_item = qw.QTableWidgetItem(hex_arr[i])
+            self.t_colors.setItem(i, 1, new_item)
+        self.t_colors.horizontalHeader().sectionClicked.connect(self.t_colors_header_clicked)
+        self.t_colors.setHorizontalHeaderLabels(h)
+        self.t_colors.resizeColumnsToContents()
+
     def save_config(self):
         self.dwm_parser.tabular_keys.clear()
         self.dwm_parser.tabular_buttons.clear()
@@ -328,6 +369,12 @@ class PdwmGui(qw.QMainWindow):
         self.dwm_parser.tabular_appearance.append([])
         for i in range(self.t_fonts.rowCount()):
             self.dwm_parser.tabular_appearance[-1].append(self.t_fonts.item(i, 0).text())
+
+        dir = self.dwm_parser.data_dir
+        with open(f"{dir}/colors.h", "w") as f:
+            for i in range(7):
+                l = f'static char {self.t_colors.item(i, 0).text()}[] = "{self.t_colors.item(i, 1).text()}";\n'
+                f.write(l)
 
         self.dwm_parser.write_tmp_files()
 
