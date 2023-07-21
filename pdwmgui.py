@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from PyQt5 import QtCore, QtWidgets as qw, uic
+from PyQt5 import QtGui, QtCore, QtWidgets as qw, uic
 from PyQt5 import *
 import sys
+
 import dwmparams as dp
 import subprocess
 from math import log2
@@ -24,6 +25,46 @@ modmap = {
     }
 
 special_keys = ["Delete", "BackSpace", "Return", "Tab", "Escape", "Print"]
+
+class FloatingButtonWidget(qw.QAbstractButton):
+    def __init__(self, picture, parent):
+        super().__init__(parent)
+        self.paddingLeft = 5
+        self.paddingTop = 5
+        self.setPicture(QtGui.QPixmap(picture))
+
+    def setPicture(self, picture):
+        self.picture = picture
+        self.update_position()
+        self.update()
+
+    def sizeHint(self):
+        return self.picture.size()
+
+    def paintEvent(self, e):
+        painter = QtGui.QPainter(self)
+        painter.drawPixmap(0, 0, self.picture)
+
+    def update_position(self):
+        if hasattr(self.parent(), 'viewport'):
+            parent_rect = self.parent().viewport().rect()
+        else:
+            parent_rect = self.parent().rect()
+
+        if not parent_rect:
+            return
+
+        x = parent_rect.width() -  self.picture.width() - self.paddingLeft
+        y = parent_rect.height() - self.picture.height() - self.paddingTop
+        self.setGeometry(x, y, self.picture.width(), self.picture.height())
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.update_position()
+        self.update()
+
+    def mousePressEvent(self, event):
+        self.parent().floatingButtonClicked.emit()
 
 class PopUp(qw.QDialog):
     def __init__(self, labels):
@@ -70,19 +111,41 @@ def keyevent_to_string(event, col):
 
 class TableWidget(qw.QTableWidget):
 
+    floatingButtonClicked = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None, enable_keypress=False):
+        self.enable_keypress = enable_keypress
+        super().__init__(parent)
+        self.floating_button = FloatingButtonWidget("./help-64x64.png", parent=self)
+        self.setStyleSheet("""
+        QHeaderView::section {
+            background-color: rgb(106, 116, 255);
+		    color: black; }
+        """)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.floating_button.update_position()
+
     def set_dialog(self, d):
         self.dialog = d
 
     def keyPressEvent(self, event):
-        header = self.horizontalHeaderItem(self.currentColumn()).text()
-        if header != "ACTION":
-            s = keyevent_to_string(event, header)
-            self.currentItem().setText(s)
-            self.resizeColumnsToContents()
-        else:
-            if event.key() == QtCore.Qt.Key_Return:
-                self.dialog.show()
-            super(TableWidget, self).keyPressEvent(event)
+        if self.enable_keypress:
+            header = self.horizontalHeaderItem(self.currentColumn()).text()
+            if header != "ACTION":
+                s = keyevent_to_string(event, header)
+                self.currentItem().setText(s)
+                self.resizeColumnsToContents()
+            else:
+                if event.key() == QtCore.Qt.Key_Return:
+                    self.dialog.show()
+        super(TableWidget, self).keyPressEvent(event)
+
+class PdwmHelpDialog(qw.QDialog):
+    def __init__(self, dlg):
+        super(PdwmHelpDialog, self).__init__()
+        uic.loadUi(dlg, self)
 
 class PdwmCommandDialog(qw.QDialog):
     def __init__(self):
@@ -109,14 +172,20 @@ class PdwmGui(qw.QMainWindow):
         self.pop_button_buttons = PopUp(["LeftClick", "RightClick", "MiddleClick", "WheelUp", "WheelDown"])
         self.pop_button_buttons.setSizePolicy(qw.QSizePolicy.Expanding, qw.QSizePolicy.Expanding)
         self.dwm_parser.make_tables()
-        self.t_keys = TableWidget(self.tab_keys)
+        self.t_keys = TableWidget(self.tab_keys, True)
         self.t_keys.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
         self.t_keys.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_keys.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_keys.verticalHeader().setVisible(False)
+        self.t_keys.horizontalHeader().setStretchLastSection(True)
         self.t_keys.setObjectName("t_keys")
         self.t_keys.cellDoubleClicked.connect(self.t_keys_cell_double_clicked)
         self.t_keys.set_dialog(self.d_custom_action)
         self.gridLayout_5.addWidget(self.t_keys, 0, 0, 1, 1)
+
+        self.t_rules = TableWidget(self.tab_rules)
+        self.gridLayout_6.addWidget(self.t_rules, 0, 0, 1, 1)
+        self.t_rules.setObjectName("t_rules")
 
         self.action_close.triggered.connect(lambda : sys.exit())
         self.action_save.triggered.connect(self.save_config)
@@ -127,13 +196,15 @@ class PdwmGui(qw.QMainWindow):
         self.pb_button_delete.clicked.connect(lambda : self.t_buttons.removeRow(self.t_buttons.currentRow()))
         self.pb_rule_add.clicked.connect(self.t_rules_add_rule)
         self.pb_rule_delete.clicked.connect(lambda : self.t_rules.removeRow(self.t_rules.currentRow()))
-        self.t_buttons = TableWidget(self.tab_buttons)
+        self.t_buttons = TableWidget(self.tab_buttons, True)
         self.t_buttons.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_buttons.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_buttons.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
+        self.t_buttons.horizontalHeader().setStretchLastSection(True)
         self.t_buttons.setAutoScroll(False)
         self.t_buttons.setObjectName("t_buttons")
         self.t_buttons.set_dialog(self.d_custom_action)
+        self.t_buttons.verticalHeader().setVisible(False)
         self.t_buttons.cellDoubleClicked.connect(self.t_buttons_cell_double_clicked)
         self.gridLayout_4.addWidget(self.t_buttons, 0, 0, 1, 1)
 
@@ -249,16 +320,20 @@ class PdwmGui(qw.QMainWindow):
                 else:
                     new_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.t_appr.setItem(i, j, new_item)
+
         self.t_appr.setHorizontalHeaderLabels(h)
         self.t_appr.resizeColumnsToContents()
+        self.t_appr.horizontalHeader().setStretchLastSection(True)
 
         self.t_fonts.setColumnCount(1)
         self.t_fonts.setRowCount(len(self.dwm_parser.tabular_appearance[-1]))
         for i, arr in enumerate(self.dwm_parser.tabular_appearance[-1]):
             new_item = qw.QTableWidgetItem(arr)
             self.t_fonts.setItem(i, 0, new_item)
-        self.t_fonts.resizeColumnsToContents()
         self.t_fonts.setHorizontalHeaderLabels(["FONTS"])
+        self.t_fonts.resizeColumnsToContents()
+        self.t_fonts.horizontalHeader().setStretchLastSection(True)
+
     def set_buttons_table(self):
         h = ["CLICK WIN", "MODIFIERS", "BUTTON", "ACTION"]
         self.t_buttons.setColumnCount(len(h))
@@ -286,8 +361,12 @@ class PdwmGui(qw.QMainWindow):
 
     def set_rules_table(self):
         h = ["CLASS", "INSTANCE", "TITLE", "TAGS", "ISFLOATING", "ISTERMINAL", "ISCENTERED", "NOSWALLOW", "MANAGEDSIZE", "MON"]
+        self.t_rules.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_rules.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_rules.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
         self.t_rules.setColumnCount(len(h))
         self.t_rules.setRowCount(len(self.dwm_parser.tabular_rules))
+        self.t_rules.verticalHeader().setVisible(False)
         for i, arr in enumerate(self.dwm_parser.tabular_rules):
             for j, attr in enumerate(arr):
                 if j == 3:
@@ -297,6 +376,8 @@ class PdwmGui(qw.QMainWindow):
                 self.t_rules.setItem(i, j, new_item)
         self.t_rules.setHorizontalHeaderLabels(h)
         self.t_rules.resizeColumnsToContents()
+        self.adjustSize()
+
 
     def t_colors_header_clicked(self, idx):
             x = self.t_colors.columnViewportPosition(idx)
@@ -314,9 +395,10 @@ class PdwmGui(qw.QMainWindow):
                 self.t_colors.resizeColumnsToContents()
 
     def set_colors_table(self):
-        h = ["CLICK TO SHOW COLORSCHEMES", ""]
+        h = ["CLICK HERE TO CHOOSE COLORSCHEME", ""]
         self.t_colors.setColumnCount(2)
         self.t_colors.setRowCount(7)
+        self.t_colors.verticalHeader().setVisible(False)
         cmd = 'cat ~/.config/phyos/pdwm/colors.h | grep "#" | awk \'{print $5}\' | tr -d \'";\''
         hex_arr = str(subprocess.check_output(cmd, shell=True, text=True)).strip('\n').split("\n")
         col_arr = ["black", "gray2", "blue2", "white", "blue", "green", "red"]
@@ -377,6 +459,14 @@ class PdwmGui(qw.QMainWindow):
                 f.write(l)
 
         self.dwm_parser.write_tmp_files()
+
+    def resize_table_to_contents(self, table):
+            vh = table.verticalHeader()
+            hh = table.horizontalHeader()
+            size = QtCore.QSize(hh.length(), vh.length())  # Get the length of the headers along each axis.
+            size += QtCore.QSize(vh.size().width(), hh.size().height())  # Add on the lengths from the *other* header
+            size += QtCore.QSize(20, 20)  # Extend further so scrollbars aren't shown.
+            table.resize(size)
 
 if __name__ == "__main__":
     app = qw.QApplication(sys.argv)

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>577</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="12" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
+      <widget class="QPushButton" name="pb_help_appr">
+       <property name="text">
+        <string>CLOSE</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QListWidget" name="listWidget">
+       <item>
+        <property name="text">
+         <string>borderpx: Window border width</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>snap: Minimum drag distance to make a window float</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>gappih: Inner horizontal gap between windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>gappiv: Inner vertical gap between windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>gappoh: Outer horizontal gap between windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>gappov: Outer vertical gap between windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>swallow floating: Swallow floating windows as well</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>smartgaps: Better gaps if there is a single window</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>topbar: Enable top/bottom bar</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>showsystray: Enable system tray in top right bar</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>user_bh: Set bar height</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Set up to 3 different fonts (order is important)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Click header to choose from available colorschemes/set custom</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>FONTS</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>SET COLOR SCHEME</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>CHANGE ATTRIBUTES</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="Line" name="line_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -21,8 +21,28 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="1">
      <widget class="QTabWidget" name="tab_widget">
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTabWidget::tab-bar {
+            alignment: center;
+}
+QTabBar::tab:selected {
+    			color: green;
+}</string>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
       <property name="currentIndex">
        <number>0</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideLeft</enum>
       </property>
       <widget class="QWidget" name="tab_info">
        <attribute name="title">
@@ -34,22 +54,6 @@
           <property name="sizeConstraint">
            <enum>QLayout::SetMaximumSize</enum>
           </property>
-          <item>
-           <widget class="QLabel" name="label_pwdm_welcome">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Welcome to pdwm gui application! You can configure dwm from here.</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QLabel" name="label_2">
             <property name="sizePolicy">
@@ -73,31 +77,103 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_3">
-            <property name="frameShape">
-             <enum>QFrame::WinPanel</enum>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+           <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>153</width>
+              <height>45</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	
+	font: 28pt &quot;Aquatico&quot;;
+}</string>
             </property>
             <property name="text">
-             <string>
-Modifier Keys = Win | Shift | Control | Alt
-
-- In modifiers section in any tab, select key/button you want to change and press modifiers from your keyboard. It should automatically insert them, MODIFIERS section is uneditable.
-- In KEYS tab, press your keyboard to detect any key. Note that you can't combine keys, only modifiers can be combined. If key is not detected, you can double click to edit it by hand. Be sure that you write the correct keysym, otherwise you will get a compile error.
-- ACTION, CLICK WIN, BUTTON are special. Double click on them for a pop-up menu, choose required option from there.
-- As for custom action (command), press 'ENTER' key to add a custom command. It will open a dialog and ask questions.
-- For appearance tab, just double click and edit the values.
-- Use top left menu to save/build dwm configuration.
-- Note that this is originally a terminal application. If any issues occur, use **pdwm -h** to check options. **pdwm -g** to get default config.
-            </string>
-            </property>
-            <property name="textFormat">
-             <enum>Qt::MarkdownText</enum>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             <string>PDWMC</string>
             </property>
             <property name="wordWrap">
-             <bool>true</bool>
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>153</width>
+              <height>45</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	color: black;
+	font: 16pt &quot;TerminessTTF Nerd Font&quot;;
+	font-weight: bold;
+}</string>
+            </property>
+            <property name="text">
+             <string>pdwm control center</string>
+            </property>
+            <property name="wordWrap">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignTop">
+           <widget class="QLabel" name="label_3">
+            <property name="minimumSize">
+             <size>
+              <width>1007</width>
+              <height>222</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	margin-left: 15px;
+}</string>
+            </property>
+            <property name="text">
+             <string>APPR 🔀 : Set colorschemes, fonts or tweak pdwm related settings
+
+BUTTONS 🖱️: Bind mouse bindings with any command/application
+
+KEYS ⌨️: Set your own keyboard bindings!
+
+RULES 🖥️: Set up custom rules for any application
+
+❓ Click the question mark in any tab for detailed usage guide!
+
+Ctrl+b: Build and apply changes
+
+Ctrl+s: Save changes</string>
             </property>
            </widget>
           </item>
@@ -109,11 +185,70 @@ Modifier Keys = Win | Shift | Control | Alt
        <attribute name="title">
         <string>APPR</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="1">
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="t_colors">
+          <property name="maximumSize">
+           <size>
+            <width>503</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="autoScroll">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QTableWidget" name="t_fonts">
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="2">
          <widget class="QTableWidget" name="t_appr">
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
           </property>
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -138,40 +273,26 @@ Modifier Keys = Win | Shift | Control | Alt
           </attribute>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QTableWidget" name="t_fonts">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-          </property>
-          <attribute name="horizontalHeaderVisible">
-           <bool>true</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::MinimumExpanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+        <item row="2" column="2" alignment="Qt::AlignRight">
+         <widget class="QPushButton" name="pb_appr_help">
+          <property name="minimumSize">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>64</width>
+            <height>64</height>
            </size>
           </property>
-         </spacer>
+          <property name="maximumSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+     border-image:url(&quot;./help-64x64.png&quot;);
+}</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -182,6 +303,12 @@ Modifier Keys = Win | Shift | Control | Alt
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <widget class="QTableWidget" name="t_buttons">
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
+          </property>
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
@@ -223,6 +350,12 @@ Modifier Keys = Win | Shift | Control | Alt
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QTableWidget" name="t_keys">
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
+          </property>
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustToContents</enum>
           </property>
@@ -258,6 +391,12 @@ Modifier Keys = Win | Shift | Control | Alt
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
          <widget class="QTableWidget" name="t_rules">
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {
+    background-color: rgb(106, 116, 255);
+		   color: black;
+}</string>
+          </property>
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
@@ -292,34 +431,15 @@ Modifier Keys = Win | Shift | Control | Alt
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>COLORS</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_17">
-        <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QTableWidget" name="t_colors">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="autoScroll">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -328,6 +448,15 @@ Modifier Keys = Win | Shift | Control | Alt
      <width>1051</width>
      <height>32</height>
     </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
