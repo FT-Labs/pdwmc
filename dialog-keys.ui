@@ -44,7 +44,7 @@
       </widget>
      </item>
      <item row="13" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pb_close">
        <property name="text">
         <string>CLOSE</string>
        </property>

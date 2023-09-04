@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="12" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
-      <widget class="QPushButton" name="pb_help_appr">
+      <widget class="QPushButton" name="pb_close">
        <property name="text">
         <string>CLOSE</string>
        </property>

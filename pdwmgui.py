@@ -63,9 +63,6 @@ class FloatingButtonWidget(qw.QAbstractButton):
         self.update_position()
         self.update()
 
-    def mousePressEvent(self, event):
-        self.parent().floatingButtonClicked.emit()
-
 class PopUp(qw.QDialog):
     def __init__(self, labels):
         qw.QDialog.__init__(self, None, QtCore.Qt.Popup | QtCore.Qt.FramelessWindowHint)
@@ -146,6 +143,7 @@ class PdwmHelpDialog(qw.QDialog):
     def __init__(self, dlg):
         super(PdwmHelpDialog, self).__init__()
         uic.loadUi(dlg, self)
+        self.pb_close.clicked.connect(lambda : self.close())
 
 class PdwmCommandDialog(qw.QDialog):
     def __init__(self):
@@ -209,6 +207,11 @@ class PdwmGui(qw.QMainWindow):
         self.gridLayout_4.addWidget(self.t_buttons, 0, 0, 1, 1)
 
         self.t_appr.itemChanged.connect(self.t_appr_check_item)
+        self.help_d = [PdwmHelpDialog("dialog-appr.ui"),
+                       PdwmHelpDialog("dialog-keys.ui"),
+                       PdwmHelpDialog("dialog-buttons.ui"),
+                       ]
+        self.pb_appr_help.clicked.connect(lambda : self.help_d[0].show())
 
         self.set_buttons_table()
         self.set_keys_table()
@@ -336,6 +339,7 @@ class PdwmGui(qw.QMainWindow):
 
     def set_buttons_table(self):
         h = ["CLICK WIN", "MODIFIERS", "BUTTON", "ACTION"]
+        self.t_buttons.floating_button.clicked.connect(lambda : self.help_d[2].show())
         self.t_buttons.setColumnCount(len(h))
         self.t_buttons.setRowCount(len(self.dwm_parser.tabular_buttons))
         for i, arr in enumerate(self.dwm_parser.tabular_buttons):
@@ -349,6 +353,7 @@ class PdwmGui(qw.QMainWindow):
     def set_keys_table(self):
         h = ["MODIFIERS", "KEY", "ACTION"]
         self.t_keys.setColumnCount(len(h))
+        self.t_keys.floating_button.clicked.connect(lambda : self.help_d[1].show())
         self.t_keys.setRowCount(len(self.dwm_parser.tabular_keys))
         for i, arr in enumerate(self.dwm_parser.tabular_keys):
             for j, attr in enumerate(arr):

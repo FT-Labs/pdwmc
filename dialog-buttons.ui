@@ -67,7 +67,7 @@ Press enter to set a custom action</string>
       </widget>
      </item>
      <item row="11" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pb_close">
        <property name="text">
         <string>CLOSE</string>
        </property>
