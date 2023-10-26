@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>513</width>
-    <height>360</height>
+    <height>366</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,14 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="10" column="0">
+     <item row="13" column="0">
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
       <widget class="QLabel" name="label_5">
        <property name="autoFillBackground">
         <bool>true</bool>
@@ -26,48 +33,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_16">
-       <property name="text">
-        <string>Modifiers + Key will trigger ACTION</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
-      <widget class="QPushButton" name="pb_close">
-       <property name="text">
-        <string>CLOSE</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Press to assign meta key/keys (Alt, Win, Ctrl, Shift)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="Line" name="line_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>ACTION</string>
@@ -90,18 +56,38 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="autoFillBackground">
-        <bool>true</bool>
+     <item row="0" column="0">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
+      </widget>
+     </item>
+     <item row="15" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
+      <widget class="QPushButton" name="pb_close">
        <property name="text">
-        <string>Choose from available actions
-Press enter to set a custom action</string>
+        <string>CLOSE</string>
        </property>
       </widget>
      </item>
      <item row="7" column="0">
+      <widget class="Line" name="line_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_16">
+       <property name="text">
+        <string>Modifiers + Key will trigger ACTION</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QLabel" name="label">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -117,6 +103,34 @@ Press enter to set a custom action</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Choose from available actions
+Press enter to set a custom action</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Press to assign meta key/keys (Alt, Win, Ctrl, Shift)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>

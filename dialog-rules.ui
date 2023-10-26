@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>650</width>
+    <height>391</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+     </item>
+     <item row="6" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
+      <widget class="QPushButton" name="pb_close">
+       <property name="text">
+        <string>CLOSE</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QListWidget" name="listWidget">
+       <item>
+        <property name="text">
+         <string>TITLE: Title of target window</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TAGS: Make target window always spawn on tag (1-9)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ISFLOATING: Spawn window as floating window</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ISTERMINAL: 1 if target is running on a terminal (like nvim)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ISCENTERED: 1 to center target window, use with ISFLOATING</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>NOSWALLOW: 1 if it is a GUI application, 0 if tty</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MANAGEDSIZE: Fit centered floating window to screen</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MON: -1 to spawn on current focused monitor </string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>           0-N to spawn on target monitor</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0" alignment="Qt::AlignHCenter">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>RULES</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

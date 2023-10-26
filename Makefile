@@ -1,5 +1,6 @@
 PROG = pdwmc
-SRC = ${PROG} utils.py dwmparser.py dwmparams.py pdwmgui.py dialog.ui main.ui phyOS_simple_term_menu.py
+UI = dialog.ui main.ui dialog-appr.ui dialog-buttons.ui dialog-keys.ui dialog-rules.ui help-64x64.png
+SRC = ${PROG} ${UI} utils.py dwmparser.py dwmparams.py pdwmgui.py  phyOS_simple_term_menu.py
 
 PREFIX = /usr
 

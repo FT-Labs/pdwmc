@@ -210,6 +210,7 @@ class PdwmGui(qw.QMainWindow):
         self.help_d = [PdwmHelpDialog("dialog-appr.ui"),
                        PdwmHelpDialog("dialog-keys.ui"),
                        PdwmHelpDialog("dialog-buttons.ui"),
+                       PdwmHelpDialog("dialog-rules.ui"),
                        ]
         self.pb_appr_help.clicked.connect(lambda : self.help_d[0].show())
 
@@ -366,6 +367,7 @@ class PdwmGui(qw.QMainWindow):
 
     def set_rules_table(self):
         h = ["CLASS", "INSTANCE", "TITLE", "TAGS", "ISFLOATING", "ISTERMINAL", "ISCENTERED", "NOSWALLOW", "MANAGEDSIZE", "MON"]
+        self.t_rules.floating_button.clicked.connect(lambda : self.help_d[3].show())
         self.t_rules.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_rules.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.t_rules.setSizeAdjustPolicy(qw.QAbstractScrollArea.AdjustToContents)
