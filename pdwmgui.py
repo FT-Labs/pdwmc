@@ -134,6 +134,7 @@ class TableWidget(qw.QTableWidget):
                 s = keyevent_to_string(event, header)
                 self.currentItem().setText(s)
                 self.resizeColumnsToContents()
+                return
             else:
                 if event.key() == QtCore.Qt.Key_Return:
                     self.dialog.show()
@@ -179,6 +180,7 @@ class PdwmGui(qw.QMainWindow):
         self.t_keys.setObjectName("t_keys")
         self.t_keys.cellDoubleClicked.connect(self.t_keys_cell_double_clicked)
         self.t_keys.set_dialog(self.d_custom_action)
+        self.t_keys.itemChanged.connect(self.t_keys_item_changed)
         self.gridLayout_5.addWidget(self.t_keys, 0, 0, 1, 1)
 
         self.t_rules = TableWidget(self.tab_rules)
@@ -206,7 +208,7 @@ class PdwmGui(qw.QMainWindow):
         self.t_buttons.cellDoubleClicked.connect(self.t_buttons_cell_double_clicked)
         self.gridLayout_4.addWidget(self.t_buttons, 0, 0, 1, 1)
 
-        self.t_appr.itemChanged.connect(self.t_appr_check_item)
+        self.t_appr.itemChanged.connect(self.t_appr_item_changed)
         self.help_d = [PdwmHelpDialog("dialog-appr.ui"),
                        PdwmHelpDialog("dialog-keys.ui"),
                        PdwmHelpDialog("dialog-buttons.ui"),
@@ -240,7 +242,7 @@ class PdwmGui(qw.QMainWindow):
             self.t_rules.setItem(self.t_rules.rowCount() - 1, j, new_item)
 
 
-    def t_appr_check_item(self, item):
+    def t_appr_item_changed(self, item):
         try:
             if int(item.text()) < 0:
                 raise ValueError
@@ -298,6 +300,11 @@ class PdwmGui(qw.QMainWindow):
             self.pop_key_actions.adjustSize()
             if self.pop_key_actions.exec_() == qw.QDialog.Accepted:
                 self.t_keys.currentItem().setText(self.pop_key_actions.text())
+        elif col_header == "KEY":
+            self.t_keys.enable_keypress = False
+
+    def t_keys_item_changed(self, item):
+        self.t_keys.enable_keypress = True
 
     def custom_action_accepted(self):
         is_term = self.d_custom_action.c_isterminal.isChecked()
