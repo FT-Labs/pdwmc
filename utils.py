@@ -9,6 +9,17 @@ from pycparser import c_generator
 def get_key_from_value(d, val):
     return [k for k, v in d.items() if v == val][0]
 
+def overwrite_main_files():
+    if not os.path.exists("/etc/xdg/pdwm"):
+        sys.stderr("Error: /etc/xdg/pdwm doesn't exist.")
+        exit(1)
+    p = set_dwm_data_dir()
+    if not os.path.exists(p):
+        os.makedirs(p)
+    os.system(f"cp -f /etc/xdg/pdwm/dwm.h {p}")
+    os.system(f"cp -f /etc/xdg/pdwm/dwm-conf.c {p}")
+
+
 def write_default_settings():
     if not os.path.exists("/etc/xdg/pdwm"):
         sys.stderr("Error: /etc/xdg/pdwm doesn't exist.")
